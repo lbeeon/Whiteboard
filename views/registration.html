@@ -26,6 +26,14 @@
                                             <label for="verify-password">Verify</label>
                                     </div>
                                     <div class="input-field col s12">
+                                            <select name="user-class">
+                                                    <option value="admin" selected>Administrator</option>
+                                                    <option value="secretary">Secretary</option>
+                                                    <option value="user">User</option>
+                                            </select>
+                                            <label>User Type</label>
+                                    </div>
+                                    <div class="input-field col s12">
                                             <button class="btn waves-effect waves-light" type="submit" name="action">Login</button>
                                     </div>
                             </form>
@@ -34,5 +42,10 @@
 
             <script src="https://code.jquery.com/jquery-2.1.2.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/js/materialize.min.js"></script>
+            <script>
+                $(document).ready(function() {
+                        $('select').material_select();
+                });
+            </script>
     </body>
 </html>

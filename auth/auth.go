@@ -1,12 +1,18 @@
 package auth
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"github.com/gorilla/securecookie"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
+
+type User struct {
+	Password  []byte
+	UserClass string
+}
 
 func ValidateLogin(user, password string, db *bolt.DB) bool {
 	err := db.View(func(tx *bolt.Tx) error {
@@ -15,12 +21,18 @@ func ValidateLogin(user, password string, db *bolt.DB) bool {
 			return fmt.Errorf("Bucket pastes not found!")
 		}
 
-		var passwordCrypt []byte
-		if passwordCrypt = bucket.Get([]byte(user)); passwordCrypt == nil {
+		var uByte []byte
+		if uByte = bucket.Get([]byte(user)); uByte == nil {
 			return fmt.Errorf("User not found!")
 		}
 
-		err := bcrypt.CompareHashAndPassword(passwordCrypt, []byte(password))
+		var u User
+		err := json.Unmarshal(uByte, &u)
+		if err != nil {
+			return err
+		}
+
+		err = bcrypt.CompareHashAndPassword(u.Password, []byte(password))
 		return err
 	})
 	if err != nil {

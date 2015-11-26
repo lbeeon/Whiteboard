@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/json"
 	"github.com/boltdb/bolt"
 	"github.com/gorilla/securecookie"
 	"github.com/hunterpraska/Whiteboard/auth"
@@ -9,6 +10,11 @@ import (
 	"log"
 	"net/http"
 )
+
+type User struct {
+	Password  []byte
+	UserClass string
+}
 
 // Secure Cookie variables
 var hashKey = securecookie.GenerateRandomKey(32)
@@ -80,7 +86,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie := Auth.DeleteCookie()
+	cookie := auth.DeleteCookie()
 	http.SetCookie(w, cookie)
 	http.Redirect(w, r, "/login", 302)
 	return
@@ -104,6 +110,7 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 		// Get values from html form
 		user := r.FormValue("user")
 		password := r.FormValue("password")
+		userClass := r.FormValue("user-class")
 
 		err := db.Update(func(tx *bolt.Tx) error {
 			bucket, err := tx.CreateBucketIfNotExists([]byte("users"))
@@ -111,12 +118,22 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 				return err
 			}
 
+			// Encrypt password with bcrypt
 			passwordCrypt, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 			if err != nil {
 				return err
 			}
 
-			err = bucket.Put([]byte(user), passwordCrypt)
+			// Create user
+			u := User{passwordCrypt, userClass}
+
+			// Marshal `u` to json object
+			uByte, err := json.Marshal(u)
+			if err != nil {
+				return err
+			}
+
+			err = bucket.Put([]byte(user), uByte)
 			if err != nil {
 				return err
 			}
