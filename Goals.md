@@ -8,8 +8,15 @@
   * We would like to have native applications for all major mobile devices (Android, iOS, Windows Phone, etc.) but the website should also be mobile-friendly
 
 # TODO
-- [ ] Login system
-- [ ] User-classes e.g. Student, Teacher, Teaching-Assistant
+- [x] Login system
+  - A basic login system is now setup.
+  - User registration is also possible.
+    - We should create a utility/library that makes it easy to register many users at once
+- [x] User-classes e.g. Student, Teacher, Teaching-Assistant
+  - There are now three user-classes: Administrator, Secretary, and User.
+    - Administrator: Has complete control over the system. There should only be a few Administrators
+    - Secretary: Has privileges to update user status e.g. status in classes, etc.
+    - User: The majority of users fall into this class. Can use the system but not modify it. Students, Teaching-Assistants, and Teachers would be here
   - We will need to allow users to be members of multiple classes, as it is common for someone to be both a student and a teaching-assistant.
   - It may be best to have this run on a per-class basis.
 - [ ] Classes
