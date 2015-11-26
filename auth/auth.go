@@ -39,3 +39,32 @@ func LoggedIn(w http.ResponseWriter, r *http.Request, s *securecookie.SecureCook
 	}
 	return false
 }
+
+func CreateCookie(s *securecookie.SecureCookie) (*http.Cookie, error) {
+	var err error
+
+	// Create secure cookie with login info
+	value := map[string]string{
+		"authenticated": "true",
+	}
+	if encoded, err := s.Encode("whiteboard", value); err == nil {
+		cookie := &http.Cookie{
+			Name:  "whiteboard",
+			Value: encoded,
+			Path:  "/",
+		}
+		cookie.MaxAge = 10000
+		return cookie, err
+	}
+
+	return nil, err
+}
+
+func DeleteCookie() *http.Cookie {
+	// Create cookie with info removed
+	cookie := &http.Cookie{
+		Name: "whiteboard",
+	}
+	cookie.MaxAge = -1
+	return cookie
+}

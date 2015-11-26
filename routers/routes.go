@@ -59,7 +59,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Attempt to validate user, if incorrect info, send user back to login page
 		if auth.ValidateLogin(user, pass, db) {
-			cookie, err := createCookie()
+			cookie, err := auth.CreateCookie(s)
 			if err != nil {
 				log.Println(err)
 				http.Redirect(w, r, "/login", 302)
@@ -80,7 +80,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie := deleteCookie()
+	cookie := Auth.DeleteCookie()
 	http.SetCookie(w, cookie)
 	http.Redirect(w, r, "/login", 302)
 	return
@@ -121,7 +121,7 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 				return err
 			}
 
-			cookie, err := createCookie()
+			cookie, err := auth.CreateCookie(s)
 			if err != nil {
 				return err
 			}
@@ -151,33 +151,4 @@ func AuthCheck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	t.Execute(w, nil)
-}
-
-func createCookie() (*http.Cookie, error) {
-	var err error
-
-	// Create secure cookie with login info
-	value := map[string]string{
-		"authenticated": "true",
-	}
-	if encoded, err := s.Encode("whiteboard", value); err == nil {
-		cookie := &http.Cookie{
-			Name:  "whiteboard",
-			Value: encoded,
-			Path:  "/",
-		}
-		cookie.MaxAge = 10000
-		return cookie, err
-	}
-
-	return nil, err
-}
-
-func deleteCookie() *http.Cookie {
-	// Create secure cookie with info removed
-	cookie := &http.Cookie{
-		Name: "whiteboard",
-	}
-	cookie.MaxAge = -1
-	return cookie
 }
