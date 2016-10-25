@@ -1,3 +1,8 @@
-FROM golang:onbuild
+FROM alpine:latest
 
-EXPOSE 8080
+WORKDIR /opt/app
+
+COPY views /opt/app/views
+COPY Whiteboard /opt/app
+
+CMD ./Whiteboard web
